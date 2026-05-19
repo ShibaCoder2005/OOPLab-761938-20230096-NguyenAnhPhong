@@ -1,21 +1,37 @@
-1. What class should implement the Comparable interface?
-Lớp Media nên triển khai Comparable<Media> vì:
-Media là lớp cha trừu tượng của tất cả các loại media (DigitalVideoDisc, CompactDisc, Book).
-Việc triển khai Comparable trong Media cho phép tất cả các lớp con kế thừa và sử dụng compareTo() để sắp xếp.
-Các lớp con có thể ghi đè compareTo() nếu cần quy tắc sắp xếp riêng (như DigitalVideoDisc ở trên).
-2. In those classes, how should you implement the compareTo() method to reflect the ordering that we want?
-Trong Media.java, compareTo() được triển khai để sắp xếp:
-Theo title (tăng dần, alphabetically) bằng title.compareTo().
-Nếu title giống nhau, theo cost (giảm dần) bằng Float.compare(other.cost, this.cost).
-Trong DigitalVideoDisc.java, compareTo() được ghi đè để sắp xếp:
-Theo title (tăng dần).
-Nếu title giống nhau, theo length (giảm dần).
-Nếu length giống nhau, theo cost (giảm dần).
-3. Can we have two ordering rules (by title then cost and by cost then title) if we use this Comparable approach?
-Không, sử dụng Comparable chỉ cho phép một quy tắc sắp xếp mặc định (thông qua compareTo()). Trong trường hợp này, quy tắc mặc định là "theo title, rồi cost".
-Để hỗ trợ quy tắc khác (theo cost, rồi title), cần sử dụng Comparator bổ sung, như trong phương thức sortByCost() của Cart. Điều này cho thấy hạn chế của Comparable khi cần nhiều quy tắc sắp xếp.
-4. Suppose the DVDs have a different ordering rule from the other media types, that is by title, then decreasing length, then cost. How would you modify your code to allow this?
-Đã xử lý ở bước trên:
-Media có compareTo() mặc định (theo title, rồi cost).
-DigitalVideoDisc ghi đè compareTo() để áp dụng quy tắc riêng: theo title (tăng dần), nếu title giống nhau thì theo length (giảm dần), nếu length giống nhau thì theo cost (giảm dần).
-Khi gọi Collections.sort() trên ArrayList<Media>, các đối tượng DigitalVideoDisc sẽ sử dụng compareTo() của chúng, còn các đối tượng CompactDisc và Book sẽ sử dụng compareTo() từ Media.
+Lab 04 - Answers
+
+1. So sánh AWT và Swing dựa trên top-level container, tên lớp của các thành phần, xử lý sự kiện, và giao diện.
+   - Top-level Container: AWT sử dụng Frame, các thành phần được thêm trực tiếp vào Frame; Swing sử dụng JFrame, các thành phần phải được thêm vào content pane (getContentPane()).
+   - Tên lớp Thành phần: AWT sử dụng Label, TextField, Button; Swing sử dụng JLabel, JTextField, JButton.
+   - Xử lý Sự kiện: Cả AWT và Swing đều sử dụng ActionListener để xử lý sự kiện, nhưng Swing hỗ trợ nhiều loại sự kiện hơn và có các listener bổ sung (như MouseListener, KeyListener).
+   - Giao diện (Look-and-Feel): AWT phụ thuộc vào hệ điều hành, giao diện đơn giản và không đồng nhất trên các nền tảng; Swing độc lập với hệ điều hành, hỗ trợ giao diện hiện đại và có thể tùy chỉnh Look-and-Feel (như Metal, Nimbus).
+
+2. Sự khác biệt giữa top-level và secondary-level containers là gì?
+   - Top-level container là các container cấp cao nhất, có thể hiển thị độc lập trên màn hình, ví dụ: Frame (AWT), JFrame (Swing). Chúng chứa các thành phần giao diện khác và là nền tảng cho một cửa sổ hoặc ứng dụng.
+   - Secondary-level container là các container nằm bên trong top-level container, không thể hiển thị độc lập, ví dụ: Panel (AWT), JPanel (Swing). Chúng được sử dụng để nhóm và tổ chức các thành phần giao diện (như button, label) bên trong top-level container.
+
+3. Bạn đã triển khai ButtonListener trong NumberGrid như thế nào?
+   - Trong NumberGrid, tôi đã triển khai ButtonListener như một lớp nội (inner class) của NumberGrid, implements ActionListener. Khi một nút số (0-9) được nhấn, ButtonListener lấy giá trị của nút (qua getActionCommand()), thêm giá trị này vào JTextField tf. Khi nút "Clear" được nhấn, ButtonListener đặt lại giá trị của tf thành chuỗi rỗng.
+
+4. Bạn đã xử lý sự kiện cho menu bar trong StoreManagerScreen như thế nào?
+   - Trong StoreManagerScreen, tôi đã tạo menu bar với menu "Options" chứa hai mục chính: "View store" và submenu "Update Store". Submenu "Update Store" có các mục "Add Book", "Add CD", "Add DVD", và "Remove Item" (tùy chọn). Tôi đã thêm ActionListener cho từng JMenuItem:
+     - "View store": Hiển thị lại StoreManagerScreen.
+     - "Add Book", "Add CD", "Add DVD": Mở các màn hình tương ứng (AddBookToStoreScreen, AddCompactDiscToStoreScreen, AddDigitalVideoDiscToStoreScreen).
+     - "Remove Item": Mở màn hình RemoveItemFromStoreScreen.
+     - Mỗi ActionListener đóng màn hình hiện tại (nếu có) và mở màn hình mới, sử dụng biến tĩnh currentScreen để quản lý.
+
+5. Bạn đã xử lý sự kiện cho nút "Play" trong MediaStore như thế nào?
+   - Trong MediaStore, tôi đã kiểm tra nếu media là instance của Playable (media instanceof Playable). Nếu đúng, tôi hiển thị một JButton "Play". Khi nút "Play" được nhấn, ActionListener sẽ:
+     - Tạo một JDialog để hiển thị thông báo.
+     - Gọi phương thức play() của media (ép kiểu media sang Playable).
+     - Hiển thị thông báo "Media is playing" trong JDialog.
+
+6. Bạn đã tổ chức các màn hình để thêm media (AddBookToStoreScreen, AddCompactDiscToStoreScreen, AddDigitalVideoDiscToStoreScreen) như thế nào?
+   - Tôi đã tạo một lớp trừu tượng AddItemToStoreScreen kế thừa từ JFrame, chứa các thành phần chung: menu bar, các JTextField cho title, category, cost, và nút "Add", "Cancel". Các lớp con kế thừa từ AddItemToStoreScreen:
+     - AddBookToStoreScreen: Chỉ sử dụng các trường cơ bản (title, category, cost), tạo đối tượng Book và thêm vào Store.
+     - AddCompactDiscToStoreScreen: Thêm JTextField cho artist, tạo đối tượng CompactDisc và thêm vào Store.
+     - AddDigitalVideoDiscToStoreScreen: Thêm JTextField cho director và length, tạo đối tượng DigitalVideoDisc và thêm vào Store.
+   - Tôi cũng thêm kiểm tra đầu vào (title không rỗng, cost không âm, v.v.) và hiển thị thông báo thành công bằng JOptionPane.
+
+7. Bạn đã mở rộng thêm tính năng nào cho giao diện Store Manager (nếu có)?
+   - Tôi đã mở rộng giao diện Store Manager bằng cách thêm tính năng "Remove Item". Tôi tạo lớp RemoveItemFromStoreScreen kế thừa từ JFrame, cho phép Store Manager chọn một media từ JComboBox và xóa media đó khỏi Store. Sau khi xóa, màn hình quay lại StoreManagerScreen và hiển thị thông báo thành công bằng JOptionPane.
